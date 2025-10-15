@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  vue-app-hybrid:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vue-app-hybrid
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    volumes:
+      # Mount source code để rebuild khi có thay đổi
+      - ./src:/app/src
+      - ./public:/app/public
+      - ./index.html:/app/index.html
+      - ./package.json:/app/package.json
+      - ./vite.config.js:/app/vite.config.js
+      # Mount nginx config để có thể sửa
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      # Mount logs
+      - ./logs/nginx:/var/log/nginx
+    networks:
+      - vue-network
+    # Override command để rebuild khi có thay đổi
+    command: >
+      sh -c "
+        echo 'Building application...' &&
+        npm run build &&
+        echo 'Starting nginx...' &&
+        nginx -g 'daemon off;'
+      "
+
+networks:
+  vue-network:
+    driver: bridge
