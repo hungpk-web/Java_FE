@@ -1,6 +1,7 @@
 <template>
   <div class="auth-wrapper">
-    <div class="login-card">
+    <div class="login-card card">
+      <h2 style="margin:8px 0 16px; text-align:center;">Sign in</h2>
       <div class="field">
         <div class="input-wrapper">
           <i class="pi pi-user input-icon"></i>
@@ -35,11 +36,7 @@
           </button>
         </div>
       </div>
-      <Button
-        label="Login"
-        @click="onLogin"
-        class="login-button"
-      />
+      <Button label="Login" @click="onLogin" class="login-button" />
       <Dialog
         v-model:visible="showMessage"
         modal
@@ -59,10 +56,10 @@
       </Dialog>
       
     </div>
-    <div class="register-box">
-        <span style="font-weight: 600;">Don't have an account? </span>
-        <RouterLink to="/register" class="link">Register</RouterLink>
-      </div>
+    <div class="register-box card">
+      <span class="hint">Don't have an account? </span>
+      <RouterLink to="/register" class="link">Register</RouterLink>
+    </div>
   </div>
   
 </template>
@@ -166,11 +163,9 @@ function togglePassword() {
 }
 .login-card {
   width: 420px;
-  padding: 14px;
-  border-radius: 8px;
-  background: #EEF0F2;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid #BCBEBF;
+  padding: 18px;
+  border-radius: 12px;
+  background: #ffffff;
 }
 
 .field {
@@ -238,14 +233,13 @@ InputText{
 .error-msg{ margin-top:8px; color:#e11d48; font-weight:600; text-align:center; }
 .register-box {
   margin-top: 24px;
-  border: 1px solid #BCBEBF;
-  border-radius: 8px;
-  padding: 12px;
+  border-radius: 12px;
+  padding: 14px 16px;
   text-align: center;
-  background: #EEF0F2;
   width: 420px;
 
 }
+.register-box .hint { font-weight: 600; }
 .register-box .link {
   color: #5B9BD5;
   font-weight: 600;

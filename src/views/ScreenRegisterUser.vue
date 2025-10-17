@@ -1,6 +1,6 @@
 <template>
   <div class="auth-wrapper">
-    <div class="register-card">
+    <div class="register-card card">
       <h2 class="title">REGISTER</h2>
 
       <div class="field">
@@ -54,16 +54,8 @@
       </div>
 
       <div class="actions-right">
-        <Button
-          label="Back"
-          class="back-button"
-          @click="onBack"
-        />
-        <Button
-          label="REGISTER"
-          class="register-button"
-          @click="onRegister"
-        />
+        <Button label="Back" class="back-button" @click="onBack" />
+        <Button label="REGISTER" class="register-button" @click="onRegister" />
       </div>
       <Dialog
         v-model:visible="showMessage"
@@ -210,10 +202,9 @@ const onRegister=async()=>{
 }
 .register-card {
   width: 420px;
-  padding: 32px;
+  padding: 28px;
   border-radius: 12px;
   background: #ffffff;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 .title {
   text-align: left;
@@ -284,18 +275,8 @@ const onRegister=async()=>{
 .back-button:hover {
   background: #f9fafb;
 }
-.register-button {
-  padding: 12px 24px;
-  border: none;
-  border-radius: 5px;
-  background: #555;
-  color: #ffffff;
-  font-weight: 600;
-  cursor: pointer;
-}
-.register-button:hover:not(:disabled) {
-  background: #444;
-}
+.register-button { padding: 12px 24px; border: none; border-radius: 8px; background: #22b8a7; color: #ffffff; font-weight: 600; cursor: pointer; }
+.register-button:hover:not(:disabled) { background: #1ea896; }
 .register-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;

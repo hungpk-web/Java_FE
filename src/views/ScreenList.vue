@@ -1,131 +1,107 @@
 <template>
   <div class="page">
     <div class="header">
-      <div class="logo"></div>
-      <div class="spacer" ></div>
-      <div class="welcome">Welcome, {{ userName }}</div>
-      <a class="logout" href="#"  @click.prevent="onLogout">Logout</a>
-    </div>
-
-    <div class="search-panel">
-      <div class="search-form">
-        <div class="search-fields">
-          <div class="search-field">
-            <label>Student Code :</label>
-            <InputText
-              v-model.trim="filters.code"
-              :maxlength="10"
-              @keydown.space.prevent
-              placeholder="Enter student code"
-            />
-          </div>
-          <div class="search-field">
-            <label>Student Name :</label>
-            <InputText
-              v-model.trim="filters.name"
-              :maxlength="20"
-              @keydown.space.prevent
-              placeholder="Enter student name"
-            />
-          </div>
-          <div class="search-field">
-            <label>Birthday :</label>
-            <Calendar 
-              v-model="filters.birthday" 
-              dateFormat="mm/dd/yy" 
-              showIcon 
-              placeholder="Select date"
-            />
-          </div>
-        </div>
-        <div class="search-actions">
-          <Button 
-            label="Search" 
-            class="p-button-info" 
-            @click="onSearch" 
-          />
-          <Button 
-            label="Refresh" 
-            class="p-button-secondary" 
-            @click="loadStudents" 
-            icon="pi pi-refresh"
-          />
-          <Button 
-            label="Add Student" 
-            class="p-button-success" 
-            @click="onAdd" 
-          />
+      <div class="logo">
+        <i class="pi pi-building logo-icon"></i>
+        <div class="school-info">
+          <div class="school-name">Trường Đại Học Bách Khoa</div>
+          <div class="school-subtitle">Hanoi University of Science and Technology</div>
         </div>
       </div>
+      <div class="spacer"></div>
+      <div class="welcome">Welcome, {{ userName }}</div>
+      <a class="logout" href="#" @click.prevent="onLogout">Logout</a>
     </div>
 
-    <DataTable
-      :value="pagedRows"
-      paginator
-      :rows="10"
-      :totalRecords="rows.length"
-      :first="first"
-      @page="onPage"
-      paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-      :rowsPerPageOptions="[5, 10, 20]"
-      class="p-datatable-sm"
-      :loading="loading"
-      showGridlines
-      stripedRows
-    >
-      <Column field="no" header="No" sortable style="width: 60px">
-        <template #body="slotProps">
-          {{ slotProps.data.no }}
-        </template>
-      </Column>
-      <Column field="code" header="Code" sortable style="width: 100px">
-        <template #body="slotProps">
-          <span class="font-mono">{{ slotProps.data.code }}</span>
-        </template>
-      </Column>
-      <Column field="name" header="Name" sortable style="width: 150px">
-        <template #body="slotProps">
-          <span class="font-semibold">{{ slotProps.data.name }}</span>
-        </template>
-      </Column>
-      <Column field="birthday" header="Birthday" sortable style="width: 120px">
-        <template #body="slotProps">
-          <span class="text-gray-600">{{ slotProps.data.birthday }}</span>
-        </template>
-      </Column>
-      <Column field="address" header="Address" style="width: 200px">
-        <template #body="slotProps">
-          <span class="text-gray-700">{{ slotProps.data.address }}</span>
-        </template>
-      </Column>
-      <Column field="score" header="Score" sortable style="width: 80px">
-        <template #body="slotProps">
-          <span class="font-semibold text-blue-600">{{ slotProps.data.score }}</span>
-        </template>
-      </Column>
-      <Column header="Edit" style="width: 100px">
-        <template #body="slotProps">
-          <div class="actions">
-            <Button
-              label="Edit"
-              class="p-button-text p-button-sm"
-              @click="onEdit(slotProps.data)"
-            />
-            <span class="mx-1">-</span>
-            <Button
-              label="Delete"
-              class="p-button-text p-button-sm p-button-danger"
-              @click="onDelete(slotProps.data)"
-            />
+    <!-- <div class="page-title-header">
+      <h2 class="page-title">Student List</h2>
+    </div> -->
+
+    <div class="content-section">
+      <div class="toolbar">
+        <div class="student-card">
+          <div class="card-header">
+            <h3 class="card-title">Total Students</h3>
           </div>
-        </template>
-      </Column>
-    </DataTable>
+          <div class="card-content">
+            <div class="progress-section">
+              <div class="progress-circle">
+                <div class="progress-text">{{ originalRows.length }}</div>
+              </div>
+            </div>
+            <div class="illustration-section">
+              <i class="pi pi-users illustration-icon"></i>
+            </div>
+          </div>
+        </div>
+        <div class="toolbar-filters">
+          <div class="row row-name">
+            <InputText v-model.trim="filters.name" :maxlength="50" @keydown.space.prevent placeholder="Student name" />
+          </div>
+          <div class="row row-inline">
+            <InputText v-model.trim="filters.code" :maxlength="10" @keydown.space.prevent placeholder="Student code" />
+            <Calendar v-model="filters.birthday" dateFormat="mm/dd/yy" showIcon placeholder="Select date" />
+          </div>
+        </div>
+        <div class="toolbar-actions">
+          <Button label="Search" icon="pi pi-search" class="p-button-info" @click="onSearch" />
+          <Button label="Add Student" icon="pi pi-plus" class="p-button-success" @click="onAdd" />
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+      <DataTable
+        :value="pagedRows"
+        paginator
+        :rows="10"
+        stripedRows
+        :totalRecords="isSearching ? searchResults.length : originalRows.length"
+        :first="first"
+        @page="onPage"
+        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+        :rowsPerPageOptions="[5, 10, 20]"
+        class="p-datatable-sm"
+        :loading="loading"
+      >
+        <Column field="no" header="No" sortable style="width: 5%">
+          <template #body="slotProps">
+            {{ first + slotProps.index + 1 }}
+          </template>
+        </Column>
+        <Column field="code" header="Code" sortable style="width: 15%"></Column>
+        <Column field="name" header="Name" sortable style="width: 20%"></Column>
+        <Column field="birthday" header="Birthday" sortable style="width: 15%"></Column>
+        <Column field="address" header="Address" style="width: 25%"></Column>
+        <Column field="score" header="Score" sortable style="width: 10%"></Column>
+        <Column header="Actions" style="width: 10%; text-align: center">
+          <template #body="slotProps">
+            <div class="actions">
+              <Button
+                icon="pi pi-pencil"
+                class="p-button-rounded p-button-text p-button-info icon-button"
+                v-tooltip.top="'Edit Student'"
+                @click="onEdit(slotProps.data)"
+              />
+              <Button
+                icon="pi pi-trash"
+                class="p-button-rounded p-button-text p-button-danger icon-button"
+                v-tooltip.top="'Delete Student'"
+                @click="onDelete(slotProps.data)"
+              />
+            </div>
+          </template>
+        </Column>
+         <template #empty>
+              No students found.
+         </template>
+      </DataTable>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, onActivated } from "vue";
+import { ref, reactive, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
@@ -134,10 +110,10 @@ import Calendar from "primevue/calendar";
 import Button from "primevue/button";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
+import Tooltip from 'primevue/tooltip';
 import { getStudents, deleteStudent } from "../service/student.js";
-import { useAuth} from "@/stores/auth.js";
-import '../styles/list.css'
-
+import { useAuth } from "@/stores/auth.js";
+import "../styles/list.css";
 const router = useRouter();
 const confirm = useConfirm();
 const toast = useToast();
@@ -148,22 +124,21 @@ const error = ref(null);
 
 const filters = reactive({ code: "", name: "", birthday: null });
 
-const rows = ref([]);
 const originalRows = ref([]);
 const searchResults = ref([]);
 const isSearching = ref(false);
 
 const first = ref(0);
+const rowsPerPage = ref(10);
 
 const transformStudentData = (apiData) => {
-  return apiData.map((student, index) => ({
-    no: index + 1,
+  return apiData.map((student) => ({
     id: student.studentId,
     code: student.studentCode,
     name: student.studentName,
     birthday: formatDate(student.dateOfBirth),
     address: student.address,
-    score: student.averageScore
+    score: student.averageScore,
   }));
 };
 
@@ -180,30 +155,21 @@ const loadStudents = async () => {
   try {
     loading.value = true;
     error.value = null;
-    
     const response = await getStudents();
-    
     if (response.status === 200 && response.data) {
       const transformedData = transformStudentData(response.data);
-      rows.value = transformedData;
-      originalRows.value = [...transformedData];
-      isSearching.value = false;
-      toast.add({
-        severity: "success",
-        summary: "Thành công",
-        detail: response.message || "Tải danh sách sinh viên thành công",
-        life: 2000
-      });
+      originalRows.value = transformedData;
+      onClearFilters(); // Reset view
     } else {
-      throw new Error(response.message || "Không thể tải dữ liệu");
+      throw new Error(response.message || "Could not load student data");
     }
   } catch (err) {
     error.value = err.message;
     toast.add({
       severity: "error",
-      summary: "Lỗi",
-      detail: err.message || "Có lỗi xảy ra khi tải dữ liệu",
-      life: 3000
+      summary: "Error",
+      detail: err.message || "An error occurred while loading data",
+      life: 3000,
     });
   } finally {
     loading.value = false;
@@ -212,67 +178,60 @@ const loadStudents = async () => {
 
 const pagedRows = computed(() => {
   const dataToShow = isSearching.value ? searchResults.value : originalRows.value;
-  return dataToShow;
+  return dataToShow.slice(first.value, first.value + rowsPerPage.value);
 });
 
-onMounted(() => {
-  loadStudents();
-});
-onActivated(() => {
-  loadStudents();
-});
-function onPage(e) {
-  first.value = e.first;
+onMounted(loadStudents);
+
+function onPage(event) {
+  first.value = event.first;
+  rowsPerPage.value = event.rows;
+}
+
+function onClearFilters() {
+    filters.code = "";
+    filters.name = "";
+    filters.birthday = null;
+    searchResults.value = [];
+    isSearching.value = false;
+    first.value = 0; // Reset paginator to the first page
+    toast.add({
+        severity: 'info',
+        summary: 'Cleared',
+        detail: 'Search filters have been cleared',
+        life: 2000
+    });
 }
 
 function onSearch() {
-  try {
-    first.value = 0;
-    let filtered = [...originalRows.value];
-    if (filters.code) {
-      filtered = filtered.filter(row => 
-        row.code.toLowerCase().includes(filters.code.toLowerCase())
-      );
-    }
-    if (filters.name) {
-      filtered = filtered.filter(row => 
-        row.name.toLowerCase().includes(filters.name.toLowerCase())
-      );
-    }
-    if (filters.birthday) {
-      const selectedDate = new Date(filters.birthday);
-      const day = String(selectedDate.getDate()).padStart(2, '0');
-      const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
-      const year = String(selectedDate.getFullYear());
-      const targetDate = `${month}/${day}/${year}`;
-      filtered = filtered.filter(row => {
-        return row.birthday === targetDate;
-      });
-    }
-    searchResults.value = filtered.map((r, idx) => ({ ...r, no: idx + 1 }));
-    isSearching.value = true;
-    const resultCount = searchResults.value.length;
-    if (resultCount === 0) {
-      toast.add({
-        severity: "info",
-        summary: "Không tìm thấy",
-        detail: "Không có kết quả phù hợp với điều kiện tìm kiếm",
-        life: 3000
-      });
-    } else {
-      toast.add({
-        severity: "success", 
-        summary: "Tìm kiếm thành công",
-        detail: `Tìm thấy ${resultCount} kết quả`,
-        life: 2000
-      });
-    }
-  } catch (err) {
+  first.value = 0;
+  let filtered = [...originalRows.value];
+  if (filters.code) {
+    filtered = filtered.filter(row => row.code.toLowerCase().includes(filters.code.toLowerCase()));
+  }
+  if (filters.name) {
+    filtered = filtered.filter(row => row.name.toLowerCase().includes(filters.name.toLowerCase()));
+  }
+  if (filters.birthday) {
+    const targetDate = formatDate(filters.birthday);
+    filtered = filtered.filter(row => row.birthday === targetDate);
+  }
+  searchResults.value = filtered;
+  isSearching.value = true;
+  const resultCount = searchResults.value.length;
+  if (resultCount === 0) {
     toast.add({
-      severity: "error",
-      summary: "Lỗi tìm kiếm",
-      detail: err.message || "Có lỗi xảy ra khi tìm kiếm",
-      life: 3000
+      severity: "warn",
+      summary: "No Results",
+      detail: "No students match your search criteria",
+      life: 3000,
+    });
+  } else {
+    toast.add({
+      severity: "success",
+      summary: "Search Complete",
+      detail: `Found ${resultCount} matching student(s)`,
+      life: 2000,
     });
   }
 }
@@ -282,53 +241,46 @@ function onAdd() {
 }
 
 function onEdit(row) {
-  router.push(
-    `/student/${row.id}`);
+  router.push(`/student/${row.id}`);
 }
 
 function onDelete(row) {
   confirm.require({
-    message: `Xóa sinh viên ${row.code}?`,
-    header: "Xác nhận",
+    message: `Are you sure you want to delete student ${row.code} - ${row.name}?`,
+    header: "Delete Confirmation",
     icon: "pi pi-exclamation-triangle",
     acceptClass: "p-button-danger",
     accept: async () => {
       try {
         loading.value = true;
         const response = await deleteStudent(row.id);
-        
         if (response.status === 200) {
-          // Xóa khỏi tất cả danh sách
-          rows.value = rows.value.filter((r) => r.id !== row.id);
-          originalRows.value = originalRows.value.filter((r) => r.id !== row.id);
-          searchResults.value = searchResults.value.filter((r) => r.id !== row.id);
+          await loadStudents(); // Reload all data to ensure consistency
           toast.add({
             severity: "success",
-            summary: "Thành công",
-            detail: response.message || "Đã xóa sinh viên thành công",
-            life: 2000
+            summary: "Success",
+            detail: response.message || "Student deleted successfully",
+            life: 2000,
           });
         } else {
-          throw new Error(response.message || "Không thể xóa sinh viên");
+          throw new Error(response.message || "Could not delete student");
         }
       } catch (err) {
         toast.add({
           severity: "error",
-          summary: "Lỗi",
-          detail: err.message || "Có lỗi xảy ra khi xóa sinh viên",
-          life: 3000
+          summary: "Error",
+          detail: err.message || "An error occurred while deleting the student",
+          life: 3000,
         });
       } finally {
-        loadStudents();
         loading.value = false;
       }
     },
   });
 }
+
 function onLogout() {
   auth.logout();
   router.push("/login");
 }
 </script>
-
-

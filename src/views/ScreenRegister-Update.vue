@@ -1,13 +1,19 @@
 <template>
   <div class="page">
     <div class="header">
-      <div class="logo"></div>
+      <div class="logo">
+        <i class="pi pi-building logo-icon"></i>
+        <div class="school-info">
+          <div class="school-name">Trường Đại Học Bách Khoa</div>
+          <div class="school-subtitle">Hanoi University of Science and Technology</div>
+        </div>
+      </div>
       <div class="spacer" />
       <div v-show="isEdit" class="welcome">Welcome, {{ userName }}</div>
       <a class="logout" href="#" @click.prevent="logout">Logout</a>
     </div>
 
-    <div class="form p-fluid">
+    <div class="content-section form p-fluid">
       <h2>STUDENT</h2>
       <div class="row" v-if="isEdit">
         <label>Student Id :</label>
@@ -37,7 +43,7 @@
         <InputNumber v-model="model.score" mode="decimal" :minFractionDigits="1" :maxFractionDigits="1" :min="0"  :step="0.1" class="half-input" @keydown.prevent.space />
       </div>
       <div class="actions">
-        <Button label="Back" class="p-button-success" @click="goList" />
+        <Button label="Back" class="p-button-info" @click="goList" />
         <Button label="Save" class="p-button-success"  @click="onSave" />
       </div>
     </div>
@@ -72,6 +78,7 @@ import Calendar from 'primevue/calendar'
 import InputNumber from 'primevue/inputnumber'
 import { getStudentById, createStudent,updateStudent } from '@/service/student'
 import { useAuth} from "@/stores/auth.js";
+import "../styles/list.css";
 const auth = useAuth();
 const userName = computed(() => auth.user || "NguyenVanA");
 const router = useRouter()
@@ -212,10 +219,9 @@ function goList(){
 .page{ padding:16px; }
 .header{ display:flex; align-items:center; gap:12px; margin-bottom:16px; }
 .spacer{ flex:1; }
-.logo{ width:42px; height:42px; background:#dfe7ef; border-radius:50%; }
 .welcome{ font-weight:600; }
 .logout{ color:#3b82f6;text-decoration: underline; }
-.form{ max-width:720px; margin:0 auto; background:#fff; padding:16px; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,.08); }
+.form{ max-width:720px; margin:0 auto; }
 .row{ display:flex; align-items:center; gap:8px; margin-bottom:10px; }
 .row label{ width:160px; }
 .address{
@@ -224,9 +230,6 @@ width: 100% !important;
 /* Làm Address kéo dài hết mức nhưng vẫn thẳng hàng với label */
 .row .address-input{ flex:1; min-width:0; }
 .actions{ display:flex; justify-content:flex-end; gap:12px; margin-top:12px; }
-.p-button-success{
-  color: black !important;  
-}
 .generate-code{
   flex: 1;
   display: flex;
